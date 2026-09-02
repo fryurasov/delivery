@@ -9,7 +9,7 @@ namespace DeliveryApp.Core.Domain.Models;
 /// </summary>
 public class Location : ValueObject
 {
-    private const byte MinValue = 0;
+    private const byte MinValue = 1;
     private const byte MaxValue = 10;
     
     /// <summary>
@@ -49,8 +49,8 @@ public class Location : ValueObject
     /// <returns>Результат</returns>
     public static Result<Location, Error> Create(byte x, byte y)
     {
-        if (x > MaxValue) return GeneralErrors.ValueMustBeLessOrEqual(nameof(X), x,  MaxValue);
-        if (y > MaxValue) return GeneralErrors.ValueMustBeLessOrEqual(nameof(Y), y,  MaxValue);
+        if (MinValue > x || x > MaxValue) return GeneralErrors.ValueMustBeBetween(nameof(X), x,  MinValue, MaxValue);
+        if (MinValue > y || y > MaxValue) return GeneralErrors.ValueMustBeBetween(nameof(Y), y,  MinValue, MaxValue);
 
         return new Location(x, y);
     }

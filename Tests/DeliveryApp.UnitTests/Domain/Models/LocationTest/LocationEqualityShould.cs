@@ -38,9 +38,11 @@ public class LocationEqualityShould
     }
     
     [Theory]
-    [InlineData(0, 0, 1, 2)]
-    [InlineData(1, 0, 1, 2)]
-    [InlineData(0, 1, 5, 1)]
+    [InlineData(1, 1, 1, 2)]
+    [InlineData(1, 1, 2, 1)]
+    [InlineData(1, 2, 1, 1)]
+    [InlineData(2, 1, 1, 1)]
+    [InlineData(1, 1, 5, 1)]
     public void BeNoEqualityIfTheValuesAreNotEqual(byte x1, byte y1, byte x2, byte y2)
     {
         // Arrange

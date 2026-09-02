@@ -7,12 +7,12 @@ namespace DeliveryApp.UnitTests.Domain.Models.LocationTest;
 public class LocationGetDistanceShould
 {
     [Theory]
-    [InlineData(0, 0, 0, 0, 0)]
-    [InlineData(0, 0, 5, 0, 5)]
-    [InlineData(0, 0, 0, 5, 5)]
-    [InlineData(0, 0, 5, 5, 10)]
+    [InlineData(1, 1, 1, 1, 0)]
+    [InlineData(1, 1, 5, 1, 4)]
+    [InlineData(1, 1, 1, 5, 4)]
+    [InlineData(1, 1, 5, 5, 8)]
     [InlineData(3, 4, 7, 9, 9)]
-    [InlineData(10, 10, 0, 0, 20)]
+    [InlineData(10, 10, 1, 1, 18)]
     [InlineData(5, 5, 5, 5, 0)]
     public void BeCorrectWhenParamsAreCorrectOnCalculated(byte x1, byte y1, byte x2, byte y2, byte expectedDistance)
     {

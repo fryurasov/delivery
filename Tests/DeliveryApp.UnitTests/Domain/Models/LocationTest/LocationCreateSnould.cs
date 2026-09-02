@@ -7,11 +7,11 @@ namespace DeliveryApp.UnitTests.Domain.Models.LocationTest;
 public class LocationCreateShould
 {
     [Theory]
-    [InlineData(0, 0)]
+    [InlineData(1, 1)]
     [InlineData(5, 5)]
     [InlineData(10, 10)]
-    [InlineData(0, 10)]
-    [InlineData(10, 0)]
+    [InlineData(1, 10)]
+    [InlineData(10, 1)]
     public void BeCorrectWhenParamsAreCorrectOnCreated(byte x, byte y)
     {
         // Arrange
@@ -26,11 +26,14 @@ public class LocationCreateShould
     }
 
     [Theory]
-    [InlineData(11, 0)]
-    [InlineData(0, 11)]
+    [InlineData(11, 1)]
+    [InlineData(1, 11)]
     [InlineData(11, 11)]
     [InlineData(15, 5)]
     [InlineData(5, 15)]
+    [InlineData(0, 0)]
+    [InlineData(1, 0)]
+    [InlineData(0, 1)]
     public void ReturnErrorWhenXOrYIsGreaterThanMaxValue(byte x, byte y)
     {
         // Arrange
