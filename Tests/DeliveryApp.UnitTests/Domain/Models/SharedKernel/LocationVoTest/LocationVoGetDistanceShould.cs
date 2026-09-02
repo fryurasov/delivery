@@ -1,10 +1,10 @@
-﻿using DeliveryApp.Core.Domain.Models;
+﻿using DeliveryApp.Core.Domain.Models.SharedKernel;
 using FluentAssertions;
 using Xunit;
 
-namespace DeliveryApp.UnitTests.Domain.Models.LocationTest;
+namespace DeliveryApp.UnitTests.Domain.Models.SharedKernel.LocationVoTest;
 
-public class LocationGetDistanceShould
+public class LocationVoGetDistanceShould
 {
     [Theory]
     [InlineData(1, 1, 1, 1, 0)]
@@ -17,11 +17,11 @@ public class LocationGetDistanceShould
     public void BeCorrectWhenParamsAreCorrectOnCalculated(byte x1, byte y1, byte x2, byte y2, byte expectedDistance)
     {
         // Arrange
-        var location1 = Location.Create(x1, y1).Value;
-        var location2 = Location.Create(x2, y2).Value;
+        var location1 = LocationVo.Create(x1, y1).Value;
+        var location2 = LocationVo.Create(x2, y2).Value;
 
         // Act
-        var distance = Location.GetDistance(location1, location2);
+        var distance = LocationVo.GetDistance(location1, location2);
 
         // Assert
         distance.Should().Be(expectedDistance);

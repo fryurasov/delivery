@@ -1,17 +1,17 @@
-﻿using DeliveryApp.Core.Domain.Models;
+﻿using DeliveryApp.Core.Domain.Models.SharedKernel;
 using FluentAssertions;
 using Xunit;
 
-namespace DeliveryApp.UnitTests.Domain.Models.LocationTest;
+namespace DeliveryApp.UnitTests.Domain.Models.SharedKernel.LocationVoTest;
 
-public class LocationEqualityShould
+public class LocationVoEqualityShould
 {
     [Fact]
     public void BeEqualWhenXAndYAreSame()
     {
         // Arrange
-        var location1 = Location.Create(5, 7).Value;
-        var location2 = Location.Create(5, 7).Value;
+        var location1 = LocationVo.Create(5, 7).Value;
+        var location2 = LocationVo.Create(5, 7).Value;
 
         // Act
         var result = location1.Equals(location2);
@@ -26,7 +26,7 @@ public class LocationEqualityShould
     public void BeEqualWhenSameInstance()
     {
         // Arrange
-        var location = Location.Create(5, 7).Value;
+        var location = LocationVo.Create(5, 7).Value;
 
         // Act
         var selfEquals = location.Equals(location);
@@ -46,8 +46,8 @@ public class LocationEqualityShould
     public void BeNoEqualityIfTheValuesAreNotEqual(byte x1, byte y1, byte x2, byte y2)
     {
         // Arrange
-        var location1 = Location.Create(x1, y1).Value;
-        var location2 = Location.Create(x2, y2).Value;
+        var location1 = LocationVo.Create(x1, y1).Value;
+        var location2 = LocationVo.Create(x2, y2).Value;
 
         // Act
         var result = location1.Equals(location2);
