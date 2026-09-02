@@ -11,8 +11,12 @@
         <PackageReference Include="Dapper" Version="2.1.72" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="Npgsql" Version="10.0.2" />
-        <PackageReference Include="System.Reflection" Version="4.3.0"/>
+        <PackageReference Include="System.Reflection" Version="4.3.0" />
         <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Utils\Errs\Errs.csproj" />
+        <ProjectReference Include="..\Utils\Ddd\Ddd.csproj" />
+    </ItemGroup>
 </Project>
