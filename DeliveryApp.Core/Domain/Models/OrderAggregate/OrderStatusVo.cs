@@ -7,18 +7,24 @@ namespace DeliveryApp.Core.Domain.Models.OrderAggregate;
 /// </summary>
 public sealed class OrderStatusVo : ValueObject
 {
-    public static OrderStatusVo Assigned => new(nameof(Assigned));
-    public static OrderStatusVo Completed => new(nameof(Completed));
+    public static OrderStatusVo Assigned => new(OrderStatusEnum.Assigned);
+    public static OrderStatusVo Completed => new(OrderStatusEnum.Completed);
     
-    public string Name { get; private set; }
+    public OrderStatusEnum Status { get; private set; }
     
-    private OrderStatusVo(string name)
+    private OrderStatusVo(OrderStatusEnum status)
     {
-        Name = name;
+        Status = status;
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Name;
+        yield return Status;
+    }
+
+    public enum OrderStatusEnum
+    {
+        Assigned,
+        Completed
     }
 }

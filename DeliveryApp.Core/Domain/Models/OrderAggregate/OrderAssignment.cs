@@ -13,7 +13,7 @@ public class OrderAssignmentEntity : Entity<Guid>
     ///     Ctr
     /// </summary>
     /// <param name="orderId">Идентификатор заказа</param>
-    /// <param name="location">Координата курьера на доске</param>
+    /// <param name="location">Координата заказа на доске</param>
     /// <param name="volume">Объем заказа</param>
     private OrderAssignmentEntity(Guid orderId, LocationVo location, VolumeVo volume) : base(Guid.NewGuid()) {
         OrderId = orderId;
@@ -33,9 +33,9 @@ public class OrderAssignmentEntity : Entity<Guid>
     public VolumeVo Volume { get; private set; } 
     
     /// <summary>
-    ///     Координата курьера на доске
+    ///     Координата заказа на доске
     /// </summary>
-    public LocationVo Location{ get; private set; } 
+    public LocationVo Location { get; private set; } 
     
     /// <summary>
     ///     Статус назначения
@@ -46,7 +46,7 @@ public class OrderAssignmentEntity : Entity<Guid>
     ///     Factory Method
     /// </summary>
     /// <param name="orderId">Идентификатор заказа</param>
-    /// <param name="location">Координата курьера на доске</param>
+    /// <param name="location">Координата заказа на доске</param>
     /// <param name="volume">Объем заказа</param>
     /// <returns>Результат</returns>
     public static Result<OrderAssignmentEntity, Error> Create(Guid orderId, LocationVo location, VolumeVo volume)
@@ -55,9 +55,9 @@ public class OrderAssignmentEntity : Entity<Guid>
     }
 
     /// <summary>
-    ///     Проверяет, может ли курьер завершить назначение, находясь в текущей локации.
+    ///     Проверяет, может ли курьер завершить назначение, в зависимости от его местоположения.
     /// </summary>
-    /// <param name="courierLocation">Текущая позиция курьера</param>
+    /// <param name="courierLocation">Позиция курьера</param>
     /// <returns> true, если курьер находится в той же клетке, что и заказ. Иначе false. </returns>
     public bool CanComplete(LocationVo courierLocation)
     {
@@ -69,7 +69,7 @@ public class OrderAssignmentEntity : Entity<Guid>
     /// <summary>
     ///     Завершить заказ
     /// </summary>
-    /// <param name="courierLocation">Текущая позиция курьера</param>
+    /// <param name="courierLocation">Позиция курьера</param>
     /// <returns>Результат</returns>
     public UnitResult<Error> Complete(LocationVo courierLocation)
     {
