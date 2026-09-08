@@ -51,6 +51,7 @@ public class OrderAssignmentEntity : Entity<Guid>
     /// <returns>Результат</returns>
     public static Result<OrderAssignmentEntity, Error> Create(Guid orderId, LocationVo location, VolumeVo volume)
     {
+        if (orderId == Guid.Empty) return GeneralErrors.ValueIsRequired(nameof(orderId));
         return new OrderAssignmentEntity(orderId, location, volume);
     }
 
