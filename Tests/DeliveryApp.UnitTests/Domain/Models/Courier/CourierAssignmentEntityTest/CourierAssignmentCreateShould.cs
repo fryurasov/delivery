@@ -1,12 +1,12 @@
 ﻿using System;
-using DeliveryApp.Core.Domain.Models.OrderAggregate;
+using DeliveryApp.Core.Domain.Models.CourierAggregate;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using FluentAssertions;
 using Xunit;
 
-namespace DeliveryApp.UnitTests.Domain.Models.OrderAggregate.OrderAssignmentTest;
+namespace DeliveryApp.UnitTests.Domain.Models.Courier.CourierAssignmentEntityTest;
 
-public class OrderAssignmentCreateShould
+public class CourierAssignmentCreateShould
 {
     [Fact]
     public void BeCorrectWhenParamsAreCorrectOnCreated()
@@ -17,11 +17,11 @@ public class OrderAssignmentCreateShould
         var volume = VolumeVo.Create(42).Value;
 
         // Act
-        var result = OrderAssignmentEntity.Create(guid, location, volume);
+        var result = CourierAssignmentEntity.Create(guid, location, volume);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatusVo.Assigned);
+        result.Value.Status.Should().Be(CourierAssignmentStatusVo.Assigned);
         result.Value.OrderId.Should().Be(guid);
         result.Value.Location.Should().Be(location);
         result.Value.Volume.Should().Be(volume);

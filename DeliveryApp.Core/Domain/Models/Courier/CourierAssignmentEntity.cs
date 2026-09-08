@@ -2,12 +2,12 @@
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
 
-namespace DeliveryApp.Core.Domain.Models.OrderAggregate;
+namespace DeliveryApp.Core.Domain.Models.CourierAggregate;
 
 /// <summary>
 ///     Назначение заказа на курьера
 /// </summary>
-public class OrderAssignmentEntity : Entity<Guid>
+public class CourierAssignmentEntity : Entity<Guid>
 {
     /// <summary>
     ///     Ctr
@@ -15,11 +15,12 @@ public class OrderAssignmentEntity : Entity<Guid>
     /// <param name="orderId">Идентификатор заказа</param>
     /// <param name="location">Координата заказа на доске</param>
     /// <param name="volume">Объем заказа</param>
-    private OrderAssignmentEntity(Guid orderId, LocationVo location, VolumeVo volume) : base(Guid.NewGuid()) {
+    private CourierAssignmentEntity(Guid orderId, LocationVo location, VolumeVo volume) : base(Guid.NewGuid()) {
+        
         OrderId = orderId;
         Location = location;
         Volume = volume;
-        Status = OrderStatusVo.Assigned;
+        Status = CourierAssignmentStatusVo.Assigned;
     }
     
     /// <summary>
@@ -40,7 +41,7 @@ public class OrderAssignmentEntity : Entity<Guid>
     /// <summary>
     ///     Статус назначения
     /// </summary>
-    public OrderStatusVo Status { get; private set; }
+    public CourierAssignmentStatusVo Status { get; private set; }
     
     /// <summary>
     ///     Factory Method
@@ -49,9 +50,9 @@ public class OrderAssignmentEntity : Entity<Guid>
     /// <param name="location">Координата заказа на доске</param>
     /// <param name="volume">Объем заказа</param>
     /// <returns>Результат</returns>
-    public static Result<OrderAssignmentEntity, Error> Create(Guid orderId, LocationVo location, VolumeVo volume)
+    public static Result<CourierAssignmentEntity, Error> Create(Guid orderId, LocationVo location, VolumeVo volume)
     {
-        return new OrderAssignmentEntity(orderId, location, volume);
+        return new CourierAssignmentEntity(orderId, location, volume);
     }
 
     /// <summary>
@@ -76,7 +77,7 @@ public class OrderAssignmentEntity : Entity<Guid>
         if (!CanComplete(courierLocation))
             return Errors.CourierTooFar();
 
-        Status = OrderStatusVo.Completed;
+        Status = CourierAssignmentStatusVo.Completed;
         
         return UnitResult.Success<Error>();
     }
@@ -86,7 +87,7 @@ public class OrderAssignmentEntity : Entity<Guid>
         public static Error CourierTooFar()
         {
             return new Error(
-                $"{nameof(OrderAssignmentEntity).ToLowerInvariant()}.courier.too.far",
+                $"{nameof(CourierAssignmentEntity).ToLowerInvariant()}.courier.too.far",
                 "Courier is too far from order location");
         }
     }
