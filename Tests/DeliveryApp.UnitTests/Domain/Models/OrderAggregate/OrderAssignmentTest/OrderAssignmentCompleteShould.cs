@@ -19,10 +19,11 @@ public class OrderAssignmentCompleteShould
         var orderAssignment = OrderAssignmentEntity.Create(guid, location, volume).Value;
 
         // Act
-        var result = orderAssignment.CanComplete(courierLocation);
+        var result = orderAssignment.Complete(courierLocation);
         
         // Assert
-        result.Should().BeTrue();
+        result.IsSuccess.Should().BeTrue();
+        orderAssignment.Status.Should().Be(OrderStatusVo.Completed);
     }
     
     [Fact]
@@ -36,9 +37,29 @@ public class OrderAssignmentCompleteShould
         var orderAssignment = OrderAssignmentEntity.Create(guid, location, volume).Value;
 
         // Act
-        var result = orderAssignment.CanComplete(courierLocation);
+        var result = orderAssignment.Complete(courierLocation);
         
         // Assert
-        result.Should().BeFalse();
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public void ReturnErrorWhen()
+    {
+        // Arrange
+        var guid = Guid.NewGuid();
+        var location = LocationVo.Create(5, 5).Value;
+        var courierLocation = LocationVo.Create(5, 5).Value;
+        var volume = VolumeVo.Create(42).Value;
+        var orderAssignment = OrderAssignmentEntity.Create(guid, location, volume).Value;
+
+        // Act
+        var result = orderAssignment.Complete(courierLocation);
+        var result2 = orderAssignment.Complete(courierLocation);
+        
+        // Assert
+        result2.IsSuccess.Should().BeFalse();
+        result2.Error.Should().NotBeNull();
     }
 }

@@ -52,6 +52,9 @@ public class OrderAssignmentEntity : Entity<Guid>
     public static Result<OrderAssignmentEntity, Error> Create(Guid orderId, LocationVo location, VolumeVo volume)
     {
         if (orderId == Guid.Empty) return GeneralErrors.ValueIsRequired(nameof(orderId));
+        if (location == null) return GeneralErrors.ValueIsRequired(nameof(location));
+        if (volume == null) return GeneralErrors.ValueIsRequired(nameof(volume));
+        
         return new OrderAssignmentEntity(orderId, location, volume);
     }
 
@@ -74,6 +77,9 @@ public class OrderAssignmentEntity : Entity<Guid>
     /// <returns>Результат</returns>
     public UnitResult<Error> Complete(LocationVo courierLocation)
     {
+        if (Status.IsFinal())
+            return Errors.AssignmentAlreadyCompleted();
+        
         if (!CanComplete(courierLocation))
             return Errors.CourierTooFar();
 
@@ -89,6 +95,13 @@ public class OrderAssignmentEntity : Entity<Guid>
             return new Error(
                 $"{nameof(OrderAssignmentEntity).ToLowerInvariant()}.courier.too.far",
                 "Courier is too far from order location");
+        }
+        
+        public static Error AssignmentAlreadyCompleted()
+        {
+            return new Error(
+                $"{nameof(OrderAssignmentEntity).ToLowerInvariant()}.already.completed",
+                "Assignment is already completed");
         }
     }
 }
