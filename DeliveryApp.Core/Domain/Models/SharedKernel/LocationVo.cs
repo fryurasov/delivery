@@ -71,6 +71,20 @@ public class LocationVo : ValueObject
     }
     
     /// <summary>
+    ///     Проверяет, является ли целевая точка соседней с исходной
+    /// </summary>
+    /// <param name="source">Исходная точка</param>
+    /// <param name="target">Проверяемая точка</param>
+    /// <returns>true, если точка target является соседней для точки source, иначе false </returns>
+    public static Result<bool, Error> IsAdjacentTo(LocationVo source, LocationVo target)
+    {
+        if (source is null) return GeneralErrors.ValueIsRequired(nameof(source));
+        if (target is null) return GeneralErrors.ValueIsRequired(nameof(target));
+        
+        return GetDistance(source, target) == 1;
+    }
+    
+    /// <summary>
     ///     Перегрузка для определения идентичности
     /// </summary>
     /// <returns>Результат</returns>

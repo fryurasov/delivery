@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace DeliveryApp.Core.Domain.Models.CourierAggregate;
+namespace DeliveryApp.Core.Domain.Models.Courier;
 
 /// <summary>
 ///     Статус назначеного заказа

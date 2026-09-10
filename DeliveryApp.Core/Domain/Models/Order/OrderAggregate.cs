@@ -3,7 +3,7 @@ using Ddd;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
 
-namespace DeliveryApp.Core.Domain.Models.OrderAggregate;
+namespace DeliveryApp.Core.Domain.Models.Order;
 
 public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
 {

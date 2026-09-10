@@ -1,8 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Models.Order;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
 
-namespace DeliveryApp.Core.Domain.Models.CourierAggregate;
+namespace DeliveryApp.Core.Domain.Models.Courier;
 
 /// <summary>
 ///     Назначение заказа на курьера
@@ -55,13 +56,20 @@ public class CourierAssignmentEntity : Entity<Guid>
         return new CourierAssignmentEntity(orderId, location, volume);
     }
 
+    public static Result<CourierAssignmentEntity, Error> CreateFromOrder(OrderAggregate order)
+    {
+        return Create(order.Id, order.Location, order.Volume);
+    }
+
     /// <summary>
     ///     Проверяет, может ли курьер завершить назначение, в зависимости от его местоположения.
     /// </summary>
     /// <param name="courierLocation">Позиция курьера</param>
     /// <returns> true, если курьер находится в той же клетке, что и заказ. Иначе false. </returns>
-    public bool CanComplete(LocationVo courierLocation)
+    public Result<bool, Error> CanComplete(LocationVo courierLocation)
     {
+        if (courierLocation is null) return GeneralErrors.ValueIsRequired(nameof(courierLocation));
+        
         var distance = LocationVo.GetDistance(Location, courierLocation);
         
         return distance == 0; 
@@ -74,7 +82,12 @@ public class CourierAssignmentEntity : Entity<Guid>
     /// <returns>Результат</returns>
     public UnitResult<Error> Complete(LocationVo courierLocation)
     {
-        if (!CanComplete(courierLocation))
+        var canComplete = CanComplete(courierLocation);
+        
+        if (canComplete.IsFailure)
+            return canComplete.Error;
+        
+        if (!canComplete.Value)
             return Errors.CourierTooFar();
 
         Status = CourierAssignmentStatusVo.Completed;

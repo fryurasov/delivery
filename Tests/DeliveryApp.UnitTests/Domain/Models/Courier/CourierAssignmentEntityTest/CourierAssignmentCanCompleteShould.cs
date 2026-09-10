@@ -1,5 +1,5 @@
 ﻿using System;
-using DeliveryApp.Core.Domain.Models.CourierAggregate;
+using DeliveryApp.Core.Domain.Models.Courier;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using FluentAssertions;
 using Xunit;

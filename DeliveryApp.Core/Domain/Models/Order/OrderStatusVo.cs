@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Errs;
 
-namespace DeliveryApp.Core.Domain.Models.OrderAggregate;
+namespace DeliveryApp.Core.Domain.Models.Order;
 
 /// <summary>
 ///     Статус назначеного заказа

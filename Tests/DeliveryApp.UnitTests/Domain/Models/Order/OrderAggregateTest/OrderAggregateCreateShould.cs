@@ -1,5 +1,5 @@
 ﻿using System;
-using DeliveryApp.Core.Domain.Models.OrderAggregate;
+using DeliveryApp.Core.Domain.Models.Order;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using FluentAssertions;
 using Xunit;

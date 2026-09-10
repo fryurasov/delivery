@@ -9,6 +9,8 @@ namespace DeliveryApp.Core.Domain.Models.SharedKernel;
 /// </summary>
 public class VolumeVo : ValueObject
 {
+    public static VolumeVo CourierVolumeMax => new VolumeVo(20); 
+    
     /// <summary>
     ///     Ctr
     /// </summary>
@@ -30,7 +32,7 @@ public class VolumeVo : ValueObject
     ///     Объем
     /// </summary>
     public int Value { get; private set; }
-    
+
     /// <summary>
     ///     Factory Method
     /// </summary>
@@ -41,7 +43,19 @@ public class VolumeVo : ValueObject
 
         return new VolumeVo(value);
     }
-    
+
+    /// <summary>
+    ///     Возвращает сумму объемов из переданной коллекции
+    /// </summary>
+    /// <param name="volumes">Коллекция объемов</param>
+    /// <returns>Суммарный объем</returns>
+    public static VolumeVo Sum(IEnumerable<VolumeVo> volumes)
+    {
+        var total = volumes.Sum(v => v.Value);
+        
+        return new VolumeVo(total);
+    }
+
     /// <summary>
     ///     Перегрузка "меньше"
     /// </summary>
@@ -88,6 +102,19 @@ public class VolumeVo : ValueObject
     {
         var result = first.Value >= second.Value;
         return result;
+    }
+    
+    /// <summary>
+    ///     Перегрузка "сложения"
+    /// </summary>
+    /// <param name="first">Объем 1</param>
+    /// <param name="second">Объем 2</param>
+    /// <returns>Результат</returns>
+    public static VolumeVo operator +(VolumeVo first, VolumeVo second)
+    {
+        var result = first.Value + second.Value;
+        
+        return new VolumeVo(result);
     }
     
     /// <summary>
