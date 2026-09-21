@@ -2,12 +2,12 @@
 using CSharpFunctionalExtensions;
 using Errs;
 
-namespace DeliveryApp.Core.Domain.Models;
+namespace DeliveryApp.Core.Domain.Models.SharedKernel;
 
 /// <summary>
 ///     Координата на доске
 /// </summary>
-public class Location : ValueObject
+public class LocationVo : ValueObject
 {
     private const byte MinValue = 1;
     private const byte MaxValue = 10;
@@ -16,7 +16,7 @@ public class Location : ValueObject
     ///     Ctr
     /// </summary>
     [ExcludeFromCodeCoverage]
-    private Location()
+    private LocationVo()
     {
     }
     
@@ -25,7 +25,7 @@ public class Location : ValueObject
     /// </summary>
     /// <param name="x">x (горизонталь), 0..10</param>
     /// <param name="y">y (вертикаль), 0..10</param>
-    private Location(byte x, byte y) : this()
+    private LocationVo(byte x, byte y) : this()
     {
         X = x;
         Y = y;
@@ -47,12 +47,12 @@ public class Location : ValueObject
     /// <param name="x">x (горизонталь), 0..10</param>
     /// <param name="y">y (вертикаль), 0..10</param>
     /// <returns>Результат</returns>
-    public static Result<Location, Error> Create(byte x, byte y)
+    public static Result<LocationVo, Error> Create(byte x, byte y)
     {
         if (MinValue > x || x > MaxValue) return GeneralErrors.ValueMustBeBetween(nameof(X), x,  MinValue, MaxValue);
         if (MinValue > y || y > MaxValue) return GeneralErrors.ValueMustBeBetween(nameof(Y), y,  MinValue, MaxValue);
 
-        return new Location(x, y);
+        return new LocationVo(x, y);
     }
     
     /// <summary>
@@ -61,7 +61,7 @@ public class Location : ValueObject
     /// <param name="l">Первая точка</param>
     /// <param name="r">Вторая точка</param>
     /// <returns>Дистанция между точками</returns>
-    public static byte GetDistance(Location l, Location r)
+    public static byte GetDistance(LocationVo l, LocationVo r)
     {
         var deltaX = Math.Abs(l.X - r.X);
         var deltaY = Math.Abs(l.Y - r.Y);
