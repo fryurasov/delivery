@@ -25,22 +25,32 @@ public sealed class OrderStatusVo : ValueObject
     }
 
     /// <summary>
+    ///     Возвращает true, если переход из старого статуса в новый допустим, иначе false
+    /// </summary>
+    /// <param name="newStatus">Новый статус</param>
+    public bool CanTransitionTo(OrderStatusVo newStatus)
+    {
+        return EnsureCanTransitionTo(newStatus).IsSuccess;
+    }
+    
+    /// <summary>
     ///     Проверяет, что переход из старого статуса в новый допустим
     /// </summary>
-    /// <param name="oldStatus">Старый статус</param>
     /// <param name="newStatus">Новый статус</param>
-    public static UnitResult<Error> EnsureCanTransitionTo(OrderStatusVo oldStatus, OrderStatusVo newStatus)
+    public UnitResult<Error> EnsureCanTransitionTo(OrderStatusVo newStatus)
     {
-        if (newStatus == oldStatus)
-            return Errors.AlreadyInStatus(oldStatus);
-        
-        if (newStatus.Status == OrderStatusEnum.Assigned && oldStatus.Status != OrderStatusEnum.Created)
-            return Errors.OldStatusNotEqualCreated(oldStatus);
-        
-        if (newStatus.Status == OrderStatusEnum.Completed && oldStatus.Status != OrderStatusEnum.Assigned)
-            return Errors.OldStatusNotEqualAssigned(oldStatus);
+        if (this == newStatus)
+            return Errors.AlreadyInStatus(this);
 
-        return UnitResult.Success<Error>();
+        return (Status, newStatus.Status) switch
+        {
+            (OrderStatusEnum.Created, OrderStatusEnum.Assigned) => UnitResult.Success<Error>(),
+            (OrderStatusEnum.Assigned, OrderStatusEnum.Completed) => UnitResult.Success<Error>(),
+            
+            (_, OrderStatusEnum.Assigned) => Errors.OldStatusNotEqualCreated(this),
+            (_, OrderStatusEnum.Completed) => Errors.OldStatusNotEqualAssigned(this),
+            _ => Errors.InvalidTransition(this, newStatus)
+        };
     }
     
     public enum OrderStatusEnum
@@ -71,6 +81,13 @@ public sealed class OrderStatusVo : ValueObject
             return new Error(
                 $"{nameof(OrderStatusVo).ToLowerInvariant()}.old.status.already.in.new.status",
                 $"Already in '{currentStatus.Status}' status");
+        }
+        
+        public static Error InvalidTransition(OrderStatusVo currentStatus, OrderStatusVo newStatus)
+        {
+            return new Error(
+                $"{nameof(OrderStatusVo).ToLowerInvariant()}.invalid.transition",
+                $"Cannot transition order status from '{currentStatus.Status}' to '{newStatus.Status}'");
         }
     }
 }

@@ -53,11 +53,17 @@ public class CourierAssignmentEntity : Entity<Guid>
     /// <returns>Результат</returns>
     public static Result<CourierAssignmentEntity, Error> Create(Guid orderId, LocationVo location, VolumeVo volume)
     {
+        if (orderId == Guid.Empty) return GeneralErrors.ValueIsRequired(nameof(orderId));
+        if (location is null) return GeneralErrors.ValueIsRequired(nameof(location));
+        if (volume is null) return GeneralErrors.ValueIsRequired(nameof(volume));
+        
         return new CourierAssignmentEntity(orderId, location, volume);
     }
 
     public static Result<CourierAssignmentEntity, Error> CreateFromOrder(OrderAggregate order)
     {
+        if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
+        
         return Create(order.Id, order.Location, order.Volume);
     }
 
@@ -69,6 +75,9 @@ public class CourierAssignmentEntity : Entity<Guid>
     public Result<bool, Error> CanComplete(LocationVo courierLocation)
     {
         if (courierLocation is null) return GeneralErrors.ValueIsRequired(nameof(courierLocation));
+        
+        if (Status == CourierAssignmentStatusVo.Completed)
+            return Errors.AlreadyCompleted();
         
         var distance = LocationVo.GetDistance(Location, courierLocation);
         
@@ -82,6 +91,8 @@ public class CourierAssignmentEntity : Entity<Guid>
     /// <returns>Результат</returns>
     public UnitResult<Error> Complete(LocationVo courierLocation)
     {
+        if (courierLocation is null) return GeneralErrors.ValueIsRequired(nameof(courierLocation));
+        
         var canComplete = CanComplete(courierLocation);
         
         if (canComplete.IsFailure)
@@ -102,6 +113,13 @@ public class CourierAssignmentEntity : Entity<Guid>
             return new Error(
                 $"{nameof(CourierAssignmentEntity).ToLowerInvariant()}.courier.too.far",
                 "Courier is too far from order location");
+        }
+        
+        public static Error AlreadyCompleted()
+        {
+            return new Error(
+                $"{nameof(CourierAssignmentEntity).ToLowerInvariant()}.already.completed",
+                "Assignment is already completed");
         }
     }
 }

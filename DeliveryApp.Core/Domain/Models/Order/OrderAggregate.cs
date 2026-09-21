@@ -43,22 +43,39 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
     public static Result<OrderAggregate, Error> Create(Guid basketId, LocationVo location, VolumeVo volume)
     {
         if (basketId == Guid.Empty) return GeneralErrors.ValueIsRequired(nameof(basketId));
+        if (location == null) return GeneralErrors.ValueIsRequired(nameof(location));
+        if (volume == null) return GeneralErrors.ValueIsRequired(nameof(volume));
         
         return new OrderAggregate(basketId, location, volume);
     }
     
     /// <summary>
-    ///     Переводит заказ в новый статус
+    ///     Назначить заказ
     /// </summary>
-    /// <param name="newStatus">Новый статус</param>
-    public UnitResult<Error> ChangeStatus(OrderStatusVo newStatus)
+    /// <returns>Результат</returns>
+    public UnitResult<Error> Assign()
     {
-        var canTransition = OrderStatusVo.EnsureCanTransitionTo(Status, newStatus);
-        if (canTransition.IsFailure)
-            return canTransition.Error;
+        var transitionResult = Status.EnsureCanTransitionTo(OrderStatusVo.Assigned);
+        if (transitionResult.IsFailure)
+            return transitionResult;
 
-        Status = newStatus;
-        
+        Status = OrderStatusVo.Assigned;
+
+        return UnitResult.Success<Error>();
+    }
+
+    /// <summary>
+    ///     Завершить заказ
+    /// </summary>
+    /// <returns>Результат</returns>
+    public UnitResult<Error> Complete()
+    {
+        var transitionResult = Status.EnsureCanTransitionTo(OrderStatusVo.Completed);
+        if (transitionResult.IsFailure)
+            return transitionResult;
+
+        Status = OrderStatusVo.Completed;
+
         return UnitResult.Success<Error>();
     }
 }

@@ -44,7 +44,7 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     ///     Ctr
     /// </summary>
     /// <param name="name">Имя курьера</param>
-    /// <param name="location">Координата заказа на доске</param>
+    /// <param name="location">Координата курьера на доске</param>
     public static Result<CourierAggregate, Error> Create(string name, LocationVo location)
     {
         if (string.IsNullOrWhiteSpace(name)) return GeneralErrors.ValueIsRequired(nameof(name));
@@ -62,10 +62,12 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     {
         if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
 
-        var volumes = AssignmentsAsReadOnly.Select(a => a.Volume);
+        var volumes = AssignmentsAsReadOnly
+            .Where(a => a.Status == CourierAssignmentStatusVo.Assigned)
+            .Select(a => a.Volume);
         var currentVolume = VolumeVo.Sum(volumes);
 
-        return currentVolume + order.Volume < VolumeMax;
+        return currentVolume + order.Volume <= VolumeMax;
     }
     
     /// <summary>
@@ -76,6 +78,9 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     {
         if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
 
+        if (_assignments.Any(a => a.OrderId == order.Id))
+            return Errors.OrderAlreadyAssigned();
+        
         var canAcceptOrder = CanAcceptOrder(order);
         if (canAcceptOrder.IsFailure)
             return canAcceptOrder.Error;
@@ -99,7 +104,9 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     public UnitResult<Error> CompleteAssignment(CourierAssignmentEntity assignment)
     {
         if (assignment is null) return GeneralErrors.ValueIsRequired(nameof(assignment));
-
+        if (!_assignments.Contains(assignment)) 
+            return Errors.AssignmentNotFound();
+        
         var result = assignment.Complete(Location);
         if (result.IsFailure)
             return result.Error;
@@ -122,6 +129,8 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
         if (!isAdjacentTo.Value)
             return  Errors.LocationNotAdjacent();
         
+        Location = target;
+        
         return UnitResult.Success<Error>();
     }
 
@@ -139,6 +148,20 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
             return new Error(
                 $"{nameof(CourierAggregate).ToLowerInvariant()}.location.not.adjacent",
                 "Target location is not adjacent to the source location");
+        }
+        
+        public static Error AssignmentNotFound()
+        {
+            return new Error(
+                $"{nameof(CourierAggregate).ToLowerInvariant()}.assignment.not.found",
+                "Assignment does not belong to this courier");
+        }
+        
+        public static Error OrderAlreadyAssigned()
+        {
+            return new Error(
+                $"{nameof(CourierAggregate).ToLowerInvariant()}.order.already.assigned",
+                "Order has already been assigned to this courier");
         }
     }
 }
