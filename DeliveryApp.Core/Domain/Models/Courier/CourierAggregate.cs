@@ -1,9 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using Ddd;
-using DeliveryApp.Core.Domain.Models.Order;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
+using DeliveryApp.Core.Domain.Models.Order;
 using Errs;
-using Errs.Extensions;
 
 namespace DeliveryApp.Core.Domain.Models.Courier;
 

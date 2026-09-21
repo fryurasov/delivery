@@ -60,6 +60,11 @@ public class CourierAssignmentEntity : Entity<Guid>
         return new CourierAssignmentEntity(orderId, location, volume);
     }
 
+    /// <summary>
+    ///     Создать назначение из заказа
+    /// </summary>
+    /// <param name="order">Заказ</param>
+    /// <returns> true, если курьер находится в той же клетке, что и заказ. Иначе false. </returns>
     public static Result<CourierAssignmentEntity, Error> CreateFromOrder(OrderAggregate order)
     {
         if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));

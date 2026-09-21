@@ -1,7 +1,7 @@
 ﻿using System;
 using DeliveryApp.Core.Domain.Models.Courier;
-using DeliveryApp.Core.Domain.Models.Order;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
+using DeliveryApp.Core.Domain.Models.Order;
 using FluentAssertions;
 using Xunit;
 
