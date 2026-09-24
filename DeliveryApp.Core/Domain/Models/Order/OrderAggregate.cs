@@ -63,10 +63,6 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
     {
         if (courier == null) return GeneralErrors.ValueIsRequired(nameof(courier));
         
-        var takeOrderResult = courier.AssignOrder(this);
-        if (takeOrderResult.IsFailure)
-            return takeOrderResult.Error;
-        
         CourierId = courier.Id;
         Status = OrderStatusVo.Assigned;
         
