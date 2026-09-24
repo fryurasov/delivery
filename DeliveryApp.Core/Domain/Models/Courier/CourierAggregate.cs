@@ -132,6 +132,17 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
         
         return UnitResult.Success<Error>();
     }
+    
+    /// <summary>
+    ///     Возвращает расстояние от курьера до заказа
+    /// </summary>
+    /// <param name="order">Заказ</param>
+    public Result<byte, Error> GetDistanceToOrder(OrderAggregate order)
+    {
+        if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
+
+        return LocationVo.GetDistance(Location, order.Location);
+    }
 
     public static class Errors
     {
