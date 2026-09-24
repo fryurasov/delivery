@@ -17,6 +17,19 @@ public sealed class CourierAssignmentStatusVo : ValueObject
         Status = status;
     }
 
+    /// <summary>
+    /// Фабричный метод для восстановления из Enum (используется в EF Core HasConversion)
+    /// </summary>
+    public static CourierAssignmentStatusVo FromEnum(AssignmentStatusEnum status)
+    {
+        return status switch
+        {
+            AssignmentStatusEnum.Assigned => Assigned,
+            AssignmentStatusEnum.Completed => Completed,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
+    }
+    
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Status;

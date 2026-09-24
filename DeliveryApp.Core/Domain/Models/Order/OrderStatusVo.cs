@@ -25,6 +25,20 @@ public sealed class OrderStatusVo : ValueObject
     }
 
     /// <summary>
+    /// Фабричный метод для восстановления из Enum (используется в EF Core HasConversion)
+    /// </summary>
+    public static OrderStatusVo FromEnum(OrderStatusEnum status)
+    {
+        return status switch
+        {
+            OrderStatusEnum.Assigned => Assigned,
+            OrderStatusEnum.Created => Created,
+            OrderStatusEnum.Completed => Completed,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
+    }
+    
+    /// <summary>
     ///     Возвращает true, если переход из старого статуса в новый допустим, иначе false
     /// </summary>
     /// <param name="newStatus">Новый статус</param>
