@@ -8,7 +8,7 @@ internal class CourierAggregateEntityTypeConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<CourierAggregate> entityTypeBuilder)
     {
-        entityTypeBuilder.ToTable("couriers");
+        entityTypeBuilder.ToTable("courier");
 
         entityTypeBuilder.HasKey(entity => entity.Id);
 
@@ -35,12 +35,12 @@ internal class CourierAggregateEntityTypeConfiguration : IEntityTypeConfiguratio
                     .IsRequired();
             });
         
-        entityTypeBuilder.HasMany(c => c.AssignmentsAsReadOnly)
+        entityTypeBuilder.HasMany(c => c.Assignments)
             .WithOne()
             .HasForeignKey("CourierId")
             .OnDelete(DeleteBehavior.Cascade);
 
-        entityTypeBuilder.Navigation(c => c.AssignmentsAsReadOnly)
+        entityTypeBuilder.Navigation(c => c.Assignments)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

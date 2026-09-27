@@ -24,7 +24,7 @@ public class OrderAggregateAssignShould
         result.IsSuccess.Should().BeTrue();
         order.Status.Should().Be(OrderStatusVo.Assigned);
         order.CourierId.Should().Be(courier.Id);
-        courier.AssignmentsAsReadOnly.Should().ContainSingle(a => a.OrderId == order.Id);
+        courier.Assignments.Should().ContainSingle(a => a.OrderId == order.Id);
     }
 
     [Fact]

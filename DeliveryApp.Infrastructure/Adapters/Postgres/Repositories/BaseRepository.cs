@@ -1,4 +1,5 @@
-﻿using Ddd;
+﻿using CSharpFunctionalExtensions;
+using Ddd;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
@@ -27,15 +28,15 @@ public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEnti
         Entity.Update(aggregate);
     }
 
-    public async Task<TEntity?> GetByIdAsync(Guid id)
+    public async Task<Maybe<TEntity>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await IncludeEntities()
             .Where(e => e.Id == id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
     
-    public async Task<List<TEntity>> GetAllAsync()
+    public async Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await IncludeEntities().ToListAsync();
+        return await IncludeEntities().ToListAsync(cancellationToken);
     }
 }

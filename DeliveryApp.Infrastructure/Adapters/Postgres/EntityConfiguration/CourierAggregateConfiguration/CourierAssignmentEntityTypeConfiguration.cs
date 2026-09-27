@@ -9,7 +9,7 @@ public class CourierAssignmentEntityTypeConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<CourierAssignmentEntity> builder)
     {
-        builder.ToTable("courier_assignments");
+        builder.ToTable("courier_assignment");
 
         builder.HasKey(e => e.Id);
         

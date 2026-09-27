@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Domain.Models.Order;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.Models.Order;
 using DeliveryApp.Core.Ports;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,17 +9,18 @@ public class OrderAggregateRepository : BaseRepository<OrderAggregate>, IOrderAg
 {
     public OrderAggregateRepository(ApplicationDbContext context) : base(context) {}
 
-    public Task<OrderAggregate?> GetFirstCreatedAsync()
+    public Task<Maybe<OrderAggregate>> GetFirstCreatedAsync(CancellationToken cancellationToken)
     {
         return IncludeEntities()
             .Where(o => o.Status == OrderStatusVo.Created)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken)
+            .AsMaybe();
     }
     
-    public Task<List<OrderAggregate>> GetAssignedAsync()
+    public Task<List<OrderAggregate>> GetAssignedAsync(CancellationToken cancellationToken)
     {
         return IncludeEntities()
             .Where(o => o.Status == OrderStatusVo.Assigned)
-            .ToListAsync<OrderAggregate>();
+            .ToListAsync(cancellationToken);
     }
 }

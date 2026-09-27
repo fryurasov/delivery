@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.Models.Order;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
@@ -10,20 +11,6 @@ namespace DeliveryApp.Core.Domain.Models.Courier;
 /// </summary>
 public class CourierAssignmentEntity : Entity<Guid>
 {
-    /// <summary>
-    ///     Ctr
-    /// </summary>
-    /// <param name="orderId">Идентификатор заказа</param>
-    /// <param name="location">Координата заказа на доске</param>
-    /// <param name="volume">Объем заказа</param>
-    private CourierAssignmentEntity(Guid orderId, LocationVo location, VolumeVo volume) : base(Guid.NewGuid()) {
-        
-        OrderId = orderId;
-        Location = location;
-        Volume = volume;
-        Status = CourierAssignmentStatusVo.Assigned;
-    }
-    
     /// <summary>
     ///     Идентификатор заказа
     /// </summary>
@@ -43,6 +30,28 @@ public class CourierAssignmentEntity : Entity<Guid>
     ///     Статус назначения
     /// </summary>
     public CourierAssignmentStatusVo Status { get; private set; }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private CourierAssignmentEntity()
+    {
+    }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    /// <param name="orderId">Идентификатор заказа</param>
+    /// <param name="location">Координата заказа на доске</param>
+    /// <param name="volume">Объем заказа</param>
+    private CourierAssignmentEntity(Guid orderId, LocationVo location, VolumeVo volume) : base(Guid.NewGuid()) {
+        
+        OrderId = orderId;
+        Location = location;
+        Volume = volume;
+        Status = CourierAssignmentStatusVo.Assigned;
+    }
     
     /// <summary>
     ///     Factory Method

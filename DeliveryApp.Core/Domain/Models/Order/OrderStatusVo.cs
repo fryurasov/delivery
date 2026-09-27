@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 using Errs;
 
 namespace DeliveryApp.Core.Domain.Models.Order;
@@ -13,6 +14,14 @@ public sealed class OrderStatusVo : ValueObject
     public static OrderStatusVo Completed => new(OrderStatusEnum.Completed);
     
     public OrderStatusEnum Status { get; private set; }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private OrderStatusVo()
+    {
+    }
     
     private OrderStatusVo(OrderStatusEnum status)
     {

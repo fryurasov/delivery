@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 
 namespace DeliveryApp.Core.Domain.Models.Courier;
 
@@ -12,6 +13,17 @@ public sealed class CourierAssignmentStatusVo : ValueObject
     
     public AssignmentStatusEnum Status { get; private set; }
     
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private CourierAssignmentStatusVo()
+    {
+    }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
     private CourierAssignmentStatusVo(AssignmentStatusEnum status)
     {
         Status = status;

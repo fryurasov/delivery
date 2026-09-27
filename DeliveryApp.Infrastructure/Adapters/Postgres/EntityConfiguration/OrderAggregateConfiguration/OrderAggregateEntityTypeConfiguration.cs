@@ -9,7 +9,7 @@ public class OrderAggregateEntityTypeConfiguration : IEntityTypeConfiguration<Or
 {
     public void Configure(EntityTypeBuilder<OrderAggregate> builder)
     {
-        builder.ToTable("orders");
+        builder.ToTable("order");
 
         builder.HasKey(e => e.Id);
 

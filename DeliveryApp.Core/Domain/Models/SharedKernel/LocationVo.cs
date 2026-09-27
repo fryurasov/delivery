@@ -9,6 +9,8 @@ namespace DeliveryApp.Core.Domain.Models.SharedKernel;
 /// </summary>
 public class LocationVo : ValueObject
 {
+    public static LocationVo LocationMin => new LocationVo(LocationVo.MinValue, LocationVo.MinValue); 
+    
     private const byte MinValue = 1;
     private const byte MaxValue = 10;
     

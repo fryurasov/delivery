@@ -10,6 +10,6 @@ public class CourierAggregateRepository : BaseRepository<CourierAggregate>, ICou
     
     protected override IQueryable<CourierAggregate> IncludeEntities()
     {
-        return Entity.Include(e => e.AssignmentsAsReadOnly);
+        return Entity.Include(e => e.Assignments);
     }
 }
