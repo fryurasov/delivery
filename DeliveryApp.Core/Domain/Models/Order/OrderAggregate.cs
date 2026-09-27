@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Ddd;
+using DeliveryApp.Core.Domain.Models.Courier;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
 
@@ -33,6 +34,11 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
     ///     Статус заказа
     /// </summary>
     public OrderStatusVo Status { get; private set; }
+    
+    /// <summary>
+    ///     Статус заказа
+    /// </summary>
+    public Guid? CourierId { get; private set; }
 
     /// <summary>
     ///     Factory Method
@@ -53,14 +59,13 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
     ///     Назначить заказ
     /// </summary>
     /// <returns>Результат</returns>
-    public UnitResult<Error> Assign()
+    public UnitResult<Error> Assign(CourierAggregate courier)
     {
-        var transitionResult = Status.EnsureCanTransitionTo(OrderStatusVo.Assigned);
-        if (transitionResult.IsFailure)
-            return transitionResult;
-
+        if (courier == null) return GeneralErrors.ValueIsRequired(nameof(courier));
+        
+        CourierId = courier.Id;
         Status = OrderStatusVo.Assigned;
-
+        
         return UnitResult.Success<Error>();
     }
 
