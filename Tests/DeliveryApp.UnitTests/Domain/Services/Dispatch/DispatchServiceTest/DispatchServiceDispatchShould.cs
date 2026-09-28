@@ -37,7 +37,7 @@ public class DispatchServiceDispatchShould
 
         // Проверяем изменение состояния доменных объектов
         order.Status.Should().Be(OrderStatusVo.Assigned);
-        nearCourier.AssignmentsAsReadOnly.Should().ContainSingle(a => a.OrderId == order.Id);
+        nearCourier.Assignments.Should().ContainSingle(a => a.OrderId == order.Id);
     }
 
     [Theory]

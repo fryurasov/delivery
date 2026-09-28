@@ -21,7 +21,7 @@ public class CourierAggregateCompleteAssignmentShould
         var order = CreateOrderAt(courierLocation);
         courier.AssignOrder(order);
 
-        var assignment = courier.AssignmentsAsReadOnly.First();
+        var assignment = courier.Assignments.First();
 
         // Act
         var result = courier.CompleteAssignment(assignment);

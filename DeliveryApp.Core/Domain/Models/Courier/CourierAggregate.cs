@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 using Ddd;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using DeliveryApp.Core.Domain.Models.Order;
@@ -8,15 +9,7 @@ namespace DeliveryApp.Core.Domain.Models.Courier;
 
 public class CourierAggregate : Aggregate<Guid>, IAggregateRoot 
 {
-    /// <summary>
-    ///     Ctr
-    /// </summary>
-    /// <param name="name">Имя курьера</param>
-    /// <param name="location">Координата заказа на доске</param>
-    private CourierAggregate(string name, LocationVo location) : base(Guid.NewGuid()) {
-        Name = name;
-        Location = location;
-    }
+    
     
     /// <summary>
     ///     Имя
@@ -37,10 +30,28 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     ///     Назначения заказов
     /// </summary>
     private readonly List<CourierAssignmentEntity> _assignments = new();
-    public IReadOnlyCollection<CourierAssignmentEntity> AssignmentsAsReadOnly => _assignments.AsReadOnly();
+    public IReadOnlyCollection<CourierAssignmentEntity> Assignments => _assignments.AsReadOnly();
     
     /// <summary>
     ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private CourierAggregate()
+    {
+    }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    /// <param name="name">Имя курьера</param>
+    /// <param name="location">Координата заказа на доске</param>
+    private CourierAggregate(string name, LocationVo location) : base(Guid.NewGuid()) {
+        Name = name;
+        Location = location;
+    }
+        
+    /// <summary>
+    ///     Factory Method
     /// </summary>
     /// <param name="name">Имя курьера</param>
     /// <param name="location">Координата курьера на доске</param>
@@ -61,7 +72,7 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     {
         if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
 
-        var volumes = AssignmentsAsReadOnly
+        var volumes = Assignments
             .Where(a => a.Status == CourierAssignmentStatusVo.Assigned)
             .Select(a => a.Volume);
         var currentVolume = VolumeVo.Sum(volumes);

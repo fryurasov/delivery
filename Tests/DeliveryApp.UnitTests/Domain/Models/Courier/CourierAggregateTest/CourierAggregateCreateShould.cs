@@ -21,7 +21,7 @@ public class CourierAggregateCreateShould
         result.IsSuccess.Should().BeTrue();
         result.Value.Name.Should().Be(name);
         result.Value.Location.Should().Be(location);
-        result.Value.AssignmentsAsReadOnly.Should().BeEmpty();
+        result.Value.Assignments.Should().BeEmpty();
     }
 
     [Theory]

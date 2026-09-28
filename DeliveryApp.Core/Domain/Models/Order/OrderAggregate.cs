@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 using Ddd;
 using DeliveryApp.Core.Domain.Models.Courier;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
@@ -8,18 +9,6 @@ namespace DeliveryApp.Core.Domain.Models.Order;
 
 public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
 {
-    /// <summary>
-    ///     Ctr
-    /// </summary>
-    /// <param name="id">Идентификатор корзины</param>
-    /// <param name="location">Координата заказа на доске</param>
-    /// <param name="volume">Объем заказа</param>
-    private OrderAggregate(Guid id, LocationVo location, VolumeVo volume) : base(id) {
-        Location = location;
-        Volume = volume;
-        Status = OrderStatusVo.Created;
-    }
-    
     /// <summary>
     ///     Объем заказа
     /// </summary>
@@ -40,6 +29,26 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
     /// </summary>
     public Guid? CourierId { get; private set; }
 
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private OrderAggregate()
+    {
+    }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    /// <param name="id">Идентификатор корзины</param>
+    /// <param name="location">Координата заказа на доске</param>
+    /// <param name="volume">Объем заказа</param>
+    private OrderAggregate(Guid id, LocationVo location, VolumeVo volume) : base(id) {
+        Location = location;
+        Volume = volume;
+        Status = OrderStatusVo.Created;
+    }
+    
     /// <summary>
     ///     Factory Method
     /// </summary>

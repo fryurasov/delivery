@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 using Errs;
 
 namespace DeliveryApp.Core.Domain.Models.Order;
@@ -14,6 +15,14 @@ public sealed class OrderStatusVo : ValueObject
     
     public OrderStatusEnum Status { get; private set; }
     
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private OrderStatusVo()
+    {
+    }
+    
     private OrderStatusVo(OrderStatusEnum status)
     {
         Status = status;
@@ -24,6 +33,20 @@ public sealed class OrderStatusVo : ValueObject
         yield return Status;
     }
 
+    /// <summary>
+    /// Фабричный метод для восстановления из Enum (используется в EF Core HasConversion)
+    /// </summary>
+    public static OrderStatusVo FromEnum(OrderStatusEnum status)
+    {
+        return status switch
+        {
+            OrderStatusEnum.Assigned => Assigned,
+            OrderStatusEnum.Created => Created,
+            OrderStatusEnum.Completed => Completed,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
+    }
+    
     /// <summary>
     ///     Возвращает true, если переход из старого статуса в новый допустим, иначе false
     /// </summary>

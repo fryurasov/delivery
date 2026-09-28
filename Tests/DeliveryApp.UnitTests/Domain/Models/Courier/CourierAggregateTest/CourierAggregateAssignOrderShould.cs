@@ -21,7 +21,7 @@ public class CourierAggregateAssignOrderShould
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        courier.AssignmentsAsReadOnly.Should().HaveCount(1);
+        courier.Assignments.Should().HaveCount(1);
     }
 
     [Fact]

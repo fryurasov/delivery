@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CSharpFunctionalExtensions;
 
 namespace DeliveryApp.Core.Domain.Models.Courier;
 
@@ -12,11 +13,35 @@ public sealed class CourierAssignmentStatusVo : ValueObject
     
     public AssignmentStatusEnum Status { get; private set; }
     
+    /// <summary>
+    ///     Ctr
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    private CourierAssignmentStatusVo()
+    {
+    }
+    
+    /// <summary>
+    ///     Ctr
+    /// </summary>
     private CourierAssignmentStatusVo(AssignmentStatusEnum status)
     {
         Status = status;
     }
 
+    /// <summary>
+    /// Фабричный метод для восстановления из Enum (используется в EF Core HasConversion)
+    /// </summary>
+    public static CourierAssignmentStatusVo FromEnum(AssignmentStatusEnum status)
+    {
+        return status switch
+        {
+            AssignmentStatusEnum.Assigned => Assigned,
+            AssignmentStatusEnum.Completed => Completed,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
+    }
+    
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Status;

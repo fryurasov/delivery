@@ -1,5 +1,10 @@
+using Ddd;
 using DeliveryApp.Api;
 using DeliveryApp.Core.Domain.Services.Dispatch;
+using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +26,22 @@ builder.Services.ConfigureOptions<SettingsSetup>();
 var connectionString = builder.Configuration["CONNECTION_STRING"];
 
 builder.Services.AddSingleton<IDispatchService, DispatchService>();
+
+// БД, ORM 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        options.UseNpgsql(connectionString,
+            sqlOptions => { sqlOptions.MigrationsAssembly("DeliveryApp.Infrastructure"); });
+        options.EnableSensitiveDataLogging();
+    }
+);
+
+// UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Repositories
+builder.Services.AddScoped<ICourierAggregateRepository, CourierAggregateRepository>();
+builder.Services.AddScoped<IOrderAggregateRepository, OrderAggregateRepository>();
 
 var app = builder.Build();
 
