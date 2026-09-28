@@ -23,7 +23,8 @@ public class DispatchService : IDispatchService
             return Errors.CourierNotFound();
 
         order.Assign(bestCourier);
-
+        bestCourier.AssignOrder(order);
+        
         return bestCourier;
     }
 
