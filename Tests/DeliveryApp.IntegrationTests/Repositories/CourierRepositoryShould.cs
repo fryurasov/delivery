@@ -10,49 +10,113 @@ namespace DeliveryApp.IntegrationTests.Repositories;
 public class CourierRepositoryShould : RepositoryTestBase
 {
     [Fact]
-    public async Task CanAddAndGetByIdCourier()
+    public async Task CanAddAndGetById()
     {
         // Arrange
         var courier = CreateCourier(1, 1);
         
         // Act
-        var courierRepository = new CourierAggregateRepository(DbContext);
-        await courierRepository.AddAsync(courier);
-        var unitOfWork = new UnitOfWork(DbContext);
-        await unitOfWork.SaveChangesAsync();
-        await unitOfWork.SaveChangesAsync();
+        await using (var writeContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext);
+            
+            await courierRepository.AddAsync(courier);
+            await unitOfWork.SaveChangesAsync();
+        }
 
         // Assert
-        var getCourierResult = await courierRepository.GetByIdAsync(courier.Id, default);
-        getCourierResult.HasValue.Should().BeTrue();
-        var courierFromDb = getCourierResult.Value;
-        courier.Should().BeEquivalentTo(courierFromDb);
+        await using (var readContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(readContext);
+            
+            var getCourierResult = await courierRepository.GetByIdAsync(courier.Id, default);
+            getCourierResult.HasValue.Should().BeTrue();
+            
+            var courierFromDb = getCourierResult.Value;
+            courier.Should().BeEquivalentTo(courierFromDb);
+        }
     }
     
     [Fact]
-    public async Task CanUpdateCourier()
+    public async Task CanUpdate()
     {
         // Arrange
         var courier = CreateCourier(1, 1);
 
-        var courierRepository = new CourierAggregateRepository(DbContext);
-        await courierRepository.AddAsync(courier);
-        var unitOfWork = new UnitOfWork(DbContext);
-        await unitOfWork.SaveChangesAsync();
+        await using (var writeContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext);
+            
+            await courierRepository.AddAsync(courier);
+            await unitOfWork.SaveChangesAsync();
+        }
 
         // Act
-        var target = LocationVo.Create(1, 2).Value;
-        courier.Move(target);
-        courierRepository.Update(courier);
-        await unitOfWork.SaveChangesAsync();
+        CourierAggregate courierToUpdate;
+        
+        await using (var updateContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(updateContext);
+            var unitOfWork = new UnitOfWork(updateContext);
+            
+            courierToUpdate = (await courierRepository.GetByIdAsync(courier.Id, default)).Value;
+            
+            var target = LocationVo.Create(1, 2).Value;
+            courierToUpdate.Move(target);
+            
+            courierRepository.Update(courierToUpdate);
+            await unitOfWork.SaveChangesAsync();
+        }
 
         // Assert
-        var getBasketResult = await courierRepository.GetByIdAsync(courier.Id, default);
-        getBasketResult.HasValue.Should().BeTrue();
-        var basketFromDb = getBasketResult.Value;
-        courier.Should().BeEquivalentTo(basketFromDb);
+        await using (var readContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(readContext);
+            
+            var getCourierResult = await courierRepository.GetByIdAsync(courier.Id, default);
+            getCourierResult.HasValue.Should().BeTrue();
+
+            var courierFromDb = getCourierResult.Value;
+            courierToUpdate.Should().BeEquivalentTo(courierFromDb);
+        }
     }
 
+    [Fact]
+    public async Task CanGetAll()
+    {
+        // Arrange
+        var courier1 = CreateCourier(1, 1);
+        var courier2 = CreateCourier(2, 2);
+        var courier3 = CreateCourier(3, 3);
+
+        var expectedCouriers = new List<CourierAggregate> { courier1, courier2, courier3 };
+        
+        await using (var writeContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext);
+            
+            await courierRepository.AddAsync(courier1);
+            await courierRepository.AddAsync(courier2);
+            await courierRepository.AddAsync(courier3);
+            await unitOfWork.SaveChangesAsync();
+        }
+
+        // Act
+
+        // Assert
+        await using (var readContext = CreateDbContext())
+        {
+            var courierRepository = new CourierAggregateRepository(readContext);
+            var couriersFromDb = await courierRepository.GetAllAsync(default);
+
+            couriersFromDb.Should().HaveCount(3);
+            couriersFromDb.Should().BeEquivalentTo(expectedCouriers);
+        }
+    }
+    
     // Хелперы для сборки объектов из примитивов
     private static CourierAggregate CreateCourier(int x, int y)
     {

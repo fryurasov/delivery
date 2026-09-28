@@ -8,15 +8,16 @@ namespace DeliveryApp.IntegrationTests.Repositories;
 public abstract class RepositoryTestBase : IAsyncLifetime
 {
     private readonly PostgresFixture _postgres = new();
+    
+    private DbContextOptions<ApplicationDbContext>? _options;
 
-    private ApplicationDbContext? _dbContext;
+    public ApplicationDbContext CreateDbContext()
+    {
+        if (_options == null)
+            throw new InvalidOperationException("DbContext options are not initialized.");
 
-    protected string ConnectionString => _postgres.ConnectionString;
-
-    protected ApplicationDbContext DbContext =>
-        _dbContext ?? throw new InvalidOperationException(
-            "DbContext is not initialized. Ensure InitializeAsync was called."
-        );
+        return new ApplicationDbContext(_options);
+    }
 
     public async Task InitializeAsync()
     {
@@ -24,25 +25,19 @@ public abstract class RepositoryTestBase : IAsyncLifetime
         await _postgres.InitializeAsync();
 
         // 2. Создаём DbContext поверх fixture
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        _options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql(
                 _postgres.ConnectionString,
-                x => x.MigrationsAssembly("BasketApp.Infrastructure"))
+                x => x.MigrationsAssembly("DeliveryApp.Infrastructure"))
             .Options;
 
-        _dbContext = new ApplicationDbContext(options);
-
         // 3. Гарантируем схему
-        await _dbContext.Database.MigrateAsync();
+        await using var dbContext = CreateDbContext();
+        await dbContext.Database.MigrateAsync();
     }
 
     public async Task DisposeAsync()
     {
-        if (_dbContext != null)
-        {
-            await _dbContext.DisposeAsync();
-        }
-
         await _postgres.DisposeAsync();
     }
 }
