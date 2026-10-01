@@ -2,12 +2,13 @@
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
+using DeliveryApp.IntegrationTests.Postgres;
 using FluentAssertions;
 using Xunit;
 
-namespace DeliveryApp.IntegrationTests.Repositories;
+namespace DeliveryApp.IntegrationTests.Postgres.Repositories;
 
-public class CourierRepositoryShould : RepositoryTestBase
+public class CourierPostgresShould : PostgresTestBase
 {
     [Fact]
     public async Task CanAddAndGetById()

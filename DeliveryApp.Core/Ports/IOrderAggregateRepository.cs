@@ -19,4 +19,6 @@ public interface IOrderAggregateRepository : IRepository<OrderAggregate>
     /// Получить все назначенные заказы (в статусе Assigned)
     /// </summary>
     Task<List<OrderAggregate>> GetAssignedAsync(CancellationToken cancellationToken);
+    
+    public Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken);
 }
