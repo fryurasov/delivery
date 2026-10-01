@@ -1,8 +1,10 @@
 using Ddd;
 using DeliveryApp.Api;
+using DeliveryApp.Core.Domain.Services.Complete;
 using DeliveryApp.Core.Domain.Services.Dispatch;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Adapters.Postgres.Queries;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +28,7 @@ builder.Services.ConfigureOptions<SettingsSetup>();
 var connectionString = builder.Configuration["CONNECTION_STRING"];
 
 builder.Services.AddSingleton<IDispatchService, DispatchService>();
+builder.Services.AddSingleton<ICompleteService, CompleteService>();
 
 // БД, ORM 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -42,6 +45,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Repositories
 builder.Services.AddScoped<ICourierAggregateRepository, CourierAggregateRepository>();
 builder.Services.AddScoped<IOrderAggregateRepository, OrderAggregateRepository>();
+
+builder.Services.AddScoped<IOrderQueryService, OrderQueryService>();
+builder.Services.AddScoped<ICourierQueryService, CourierQueryService>();
 
 var app = builder.Build();
 

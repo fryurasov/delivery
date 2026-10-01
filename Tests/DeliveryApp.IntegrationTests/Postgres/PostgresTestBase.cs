@@ -1,16 +1,28 @@
 ﻿using CntFixtures;
+using DeliveryApp.Core;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace DeliveryApp.IntegrationTests.Repositories;
+namespace DeliveryApp.IntegrationTests.Postgres;
 
-public abstract class RepositoryTestBase : IAsyncLifetime
+public abstract class PostgresTestBase : IAsyncLifetime
 {
     private readonly PostgresFixture _postgres = new();
     
+    public string ConnectionString => _postgres.ConnectionString;
+    
     private DbContextOptions<ApplicationDbContext>? _options;
 
+    public IOptions<Settings> CreateOptions()
+    {
+        return Options.Create(new Settings 
+        { 
+            ConnectionString = ConnectionString 
+        });
+    }
+    
     public ApplicationDbContext CreateDbContext()
     {
         if (_options == null)

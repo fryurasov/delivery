@@ -25,8 +25,8 @@ public class LocationVo : ValueObject
     /// <summary>
     ///     Ctr
     /// </summary>
-    /// <param name="x">x (горизонталь), 0..10</param>
-    /// <param name="y">y (вертикаль), 0..10</param>
+    /// <param name="x">x (горизонталь), 1..10</param>
+    /// <param name="y">y (вертикаль), 1..10</param>
     private LocationVo(byte x, byte y) : this()
     {
         X = x;
@@ -46,8 +46,8 @@ public class LocationVo : ValueObject
     /// <summary>
     ///     Factory Method
     /// </summary>
-    /// <param name="x">x (горизонталь), 0..10</param>
-    /// <param name="y">y (вертикаль), 0..10</param>
+    /// <param name="x">x (горизонталь), 1..10</param>
+    /// <param name="y">y (вертикаль), 1..10</param>
     /// <returns>Результат</returns>
     public static Result<LocationVo, Error> Create(byte x, byte y)
     {

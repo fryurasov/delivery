@@ -10,4 +10,5 @@ public interface ICourierAggregateRepository : IRepository<CourierAggregate>
     void Update(CourierAggregate courier);
     Task<Maybe<CourierAggregate>> GetByIdAsync(Guid courierId, CancellationToken cancellationToken);
     Task<List<CourierAggregate>> GetAllAsync(CancellationToken cancellationToken);
+    public Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken);
 }
