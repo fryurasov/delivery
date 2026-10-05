@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DeliveryApp.Core.Application.Commands.CreateCourier;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
 using MediatR;
@@ -14,29 +13,9 @@ public class CreateOrderCommand : IRequest<Result<Guid, Error>>
     public Guid OrderId { get; private set; }
     
     /// <summary>
-    ///     Страна
+    ///     Объем заказа
     /// </summary>
-    public string Country  { get; private set; }
-    
-    /// <summary>
-    ///     Город
-    /// </summary>
-    public string City { get; private set; } 
-    
-    /// <summary>
-    ///     Улица
-    /// </summary>
-    public string Street  { get; private set; }
-    
-    /// <summary>
-    ///     Дом
-    /// </summary>
-    public string House { get; private set; }
-    
-    /// <summary>
-    ///     Квартира
-    /// </summary>
-    public string Apartment { get; private set; }
+    public AddressVo Address { get; private set; }
     
     /// <summary>
     ///     Объем заказа
@@ -46,15 +25,10 @@ public class CreateOrderCommand : IRequest<Result<Guid, Error>>
     /// <summary>
     ///     Ctr
     /// </summary>
-    private CreateOrderCommand(Guid orderId, string country, string city, string street,
-        string house, string apartment, VolumeVo volume)
+    private CreateOrderCommand(Guid orderId, AddressVo address, VolumeVo volume)
     {
         OrderId = orderId;
-        Country = country;
-        City = city;
-        Street = street;
-        House = house;
-        Apartment = apartment;
+        Address = address;
         Volume = volume;
     }
     
@@ -73,15 +47,13 @@ public class CreateOrderCommand : IRequest<Result<Guid, Error>>
         string house, string apartment, int volume)
     {
         if (orderId == Guid.Empty) return GeneralErrors.ValueIsRequired(nameof(orderId));
-        if (string.IsNullOrWhiteSpace(country)) return GeneralErrors.ValueIsRequired(nameof(country));
-        if (string.IsNullOrWhiteSpace(city)) return GeneralErrors.ValueIsRequired(nameof(city));
-        if (string.IsNullOrWhiteSpace(street)) return GeneralErrors.ValueIsRequired(nameof(street));
-        if (string.IsNullOrWhiteSpace(house)) return GeneralErrors.ValueIsRequired(nameof(house));
-        if (string.IsNullOrWhiteSpace(apartment)) return GeneralErrors.ValueIsRequired(nameof(apartment));
+        
+        var addressResult = AddressVo.Create(country, city, street, house, apartment);
+        if (addressResult.IsFailure) return addressResult.Error;
 
         var volumeResult = VolumeVo.Create(volume);
         if (volumeResult.IsFailure) return volumeResult.Error;
         
-        return new CreateOrderCommand(orderId, country, city, street, house, apartment, volumeResult.Value);
+        return new CreateOrderCommand(orderId, addressResult.Value, volumeResult.Value);
     }
 }

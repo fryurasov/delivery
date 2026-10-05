@@ -8,7 +8,7 @@ using MediatR;
 
 namespace DeliveryApp.Core.Application.Commands.CreateCourier;
 
-public class CreateCourierCommandHandler : IRequest<Result<CreateCourierCommand, Result<Guid, Error>>>
+public class CreateCourierCommandHandler : IRequestHandler<CreateCourierCommand, Result<Guid, Error>>
 {
     private readonly ICourierAggregateRepository _courierAggregateRepository;
     private readonly IUnitOfWork _unitOfWork;
