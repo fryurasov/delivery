@@ -16,33 +16,36 @@ public class CourierAggregateCompleteAssignmentShould
         // Arrange
         var courierLocation = LocationVo.Create(1, 1).Value;
         var courier = CourierAggregate.Create("Иван", courierLocation).Value;
-
+        
         // Заказ находится в той же клетке (1,1)
         var order = CreateOrderAt(courierLocation);
         courier.AssignOrder(order);
 
-        var assignment = courier.Assignments.First();
-
         // Act
-        var result = courier.CompleteAssignment(assignment);
+        var result = courier.Complete(order);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        assignment.Status.Should().Be(CourierAssignmentStatusVo.Completed);
+        
+        var courierAssignment = courier.Assignments.SingleOrDefault(t => t.OrderId == order.Id);
+        courierAssignment.Should().NotBeNull();
+        courierAssignment.Status.Should().Be(CourierAssignmentStatusVo.Completed);
     }
 
     [Fact]
     public void ReturnAssignmentNotFoundErrorWhenAssignmentDoesNotBelongToCourier()
     {
         // Arrange
+        var courierLocation = LocationVo.Create(1, 1).Value;
         var courier = CourierAggregate.Create("Иван", LocationVo.Create(1, 1).Value).Value;
-
+        var order = CreateOrderAt(courierLocation);
+        
         // Создаем "чужое" назначение через фабричный метод
         var foreignOrder = CreateOrderAt(LocationVo.Create(1, 1).Value);
         var foreignAssignment = CourierAssignmentEntity.CreateFromOrder(foreignOrder).Value;
 
         // Act
-        var result = courier.CompleteAssignment(foreignAssignment);
+        var result = courier.Complete(order);
 
         // Assert
         result.IsFailure.Should().BeTrue();

@@ -39,4 +39,9 @@ public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEnti
     {
         return await IncludeEntities().ToListAsync(cancellationToken);
     }
+
+    public async Task<bool> IsExistByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await Entity.AnyAsync(e => e.Id == id, cancellationToken);
+    }
 }

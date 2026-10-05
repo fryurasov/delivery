@@ -110,11 +110,13 @@ public class CourierAggregate : Aggregate<Guid>, IAggregateRoot
     /// <summary>
     ///     Завершить заказ
     /// </summary>
-    /// <param name="assignment">Назначение на курьера</param>
-    public UnitResult<Error> CompleteAssignment(CourierAssignmentEntity assignment)
+    /// <param name="order">Заказ</param>
+    public UnitResult<Error> Complete(OrderAggregate order)
     {
-        if (assignment is null) return GeneralErrors.ValueIsRequired(nameof(assignment));
-        if (!_assignments.Contains(assignment)) 
+        if (order is null) return GeneralErrors.ValueIsRequired(nameof(order));
+        
+        var assignment = Assignments.SingleOrDefault(a => a.OrderId == order.Id);
+        if (assignment == null) 
             return Errors.AssignmentNotFound();
         
         var result = assignment.Complete(Location);
