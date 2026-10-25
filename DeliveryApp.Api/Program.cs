@@ -1,6 +1,7 @@
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using Ddd;
 using DeliveryApp.Api;
+using DeliveryApp.Api.Adapters.BackgroundJobs;
 using DeliveryApp.Core.Application.Commands.AssignOrder;
 using DeliveryApp.Core.Application.Commands.CompleteOrder;
 using DeliveryApp.Core.Application.Commands.CreateCourier;
@@ -19,6 +20,7 @@ using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using Errs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +33,9 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.AllowAnyOrigin(); // Не делайте так в проде!
+            policy.AllowAnyOrigin() // Не делайте так в проде!
+                .AllowAnyMethod()
+                .AllowAnyHeader();
         });
 });
 
@@ -42,7 +46,7 @@ var connectionString = builder.Configuration["CONNECTION_STRING"];
 builder.Services.AddSingleton<IDispatchService, DispatchService>();
 builder.Services.AddSingleton<ICompleteService, CompleteService>();
 
-// БД, ORM 
+// БД, ORM
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         options.UseNpgsql(connectionString,
@@ -64,6 +68,17 @@ builder.Services.AddScoped<ICourierQueryService, CourierQueryService>();
 // MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
+// MVC Controllers
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c => { c.EnableAnnotations(); });
+
 // Commands
 builder.Services.AddTransient<IRequestHandler<AssignOrderCommand, UnitResult<Error>>, AssignOrderCommandHandler>();
 builder.Services.AddTransient<IRequestHandler<CompleteOrderCommand, UnitResult<Error>> , CompleteOrderCommandHandler>();
@@ -75,7 +90,21 @@ builder.Services.AddTransient<IRequestHandler<CreateOrderCommand, Result<Guid, E
 // Queries
 builder.Services.AddTransient<IRequestHandler<GetAllCouriersQuery, GetAllCouriersResponse>, GetAllCouriersQueryHandler>();
 builder.Services.AddTransient<IRequestHandler<GetNotCompletedOrdersQuery, GetNotCompletedOrdersResponse>, GetNotCompletedOrdersQueryHandler>();
-    
+
+builder.Services.AddQuartz(configure =>
+{
+    var assignOrdersJobKey = new JobKey(nameof(AssignOrdersJob));
+    configure
+        .AddJob<AssignOrdersJob>(job => job.WithIdentity(assignOrdersJobKey))
+        .AddTrigger(
+            trigger => trigger.ForJob(assignOrdersJobKey)
+                .WithSimpleSchedule(
+                    schedule => schedule.WithIntervalInSeconds(1)
+                        .RepeatForever()));
+});
+
+builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
 var app = builder.Build();
 
 // -----------------------------------
@@ -86,7 +115,16 @@ else
     app.UseHsts();
 
 app.UseHealthChecks("/health");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseRouting();
+app.UseCors();
+app.MapControllers();
 
 // Apply Migrations
 // using (var scope = app.Services.CreateScope())
@@ -96,3 +134,5 @@ app.UseRouting();
 // }
 
 app.Run();
+
+public partial class Program { }
