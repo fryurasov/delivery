@@ -5,6 +5,7 @@ using CSharpFunctionalExtensions;
 using Ddd;
 using DeliveryApp.Core.Application.Commands.CreateOrder;
 using DeliveryApp.Core.Domain.Models.Order;
+using DeliveryApp.Core.Domain.Models.SharedKernel;
 using DeliveryApp.Core.Ports;
 using FluentAssertions;
 using NSubstitute;
@@ -16,13 +17,18 @@ public class CreateOrderHandlerShould
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOrderAggregateRepository _orderRepository;
+    private readonly IGeoClient _geoClient;
     private readonly CreateOrderCommandHandler _createOrderCommandHandler;
 
     public CreateOrderHandlerShould()
     {
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _orderRepository = Substitute.For<IOrderAggregateRepository>();
-        _createOrderCommandHandler = new CreateOrderCommandHandler(_unitOfWork, _orderRepository);
+        _geoClient = Substitute.For<IGeoClient>();
+        _geoClient
+            .GetGeolocationAsync(Arg.Any<AddressVo>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(LocationVo.Create(1, 1)));
+        _createOrderCommandHandler = new CreateOrderCommandHandler(_unitOfWork, _orderRepository, _geoClient);
     }
 
     [Fact]

@@ -14,6 +14,7 @@ using DeliveryApp.Core.Application.Queries.GetNotCompletedOrders.Response;
 using DeliveryApp.Core.Domain.Services.Complete;
 using DeliveryApp.Core.Domain.Services.Dispatch;
 using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Queries;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
@@ -64,6 +65,9 @@ builder.Services.AddScoped<IOrderAggregateRepository, OrderAggregateRepository>(
 
 builder.Services.AddScoped<IOrderQueryService, OrderQueryService>();
 builder.Services.AddScoped<ICourierQueryService, CourierQueryService>();
+
+// Grpc
+builder.Services.AddSingleton<IGeoClient, GeoClient>();
 
 // MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
