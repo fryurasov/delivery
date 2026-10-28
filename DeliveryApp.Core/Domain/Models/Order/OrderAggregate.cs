@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions;
 using Ddd;
 using DeliveryApp.Core.Domain.Models.Courier;
+using DeliveryApp.Core.Domain.Models.Order.DomainEvents;
 using DeliveryApp.Core.Domain.Models.SharedKernel;
 using Errs;
 
@@ -74,7 +75,9 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
         
         CourierId = courier.Id;
         Status = OrderStatusVo.Assigned;
-        
+
+        RaiseDomainEvent(new OrderAssignedDomainEvent(this));
+
         return UnitResult.Success<Error>();
     }
 
@@ -89,6 +92,8 @@ public class OrderAggregate : Aggregate<Guid>, IAggregateRoot
             return transitionResult;
 
         Status = OrderStatusVo.Completed;
+
+        RaiseDomainEvent(new OrderCompletedDomainEvent(this));
 
         return UnitResult.Success<Error>();
     }
