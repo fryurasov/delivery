@@ -59,6 +59,6 @@ public class GeoClient : IGeoClient
             Street = address.Street
         }, null, DateTime.UtcNow.AddSeconds(5), cancellationToken);
 
-        return LocationVo.Create((byte)reply.Location.X, (byte)reply.Location.Y);
+        return LocationVo.Create(reply.Location.X, reply.Location.Y);
     }
 }

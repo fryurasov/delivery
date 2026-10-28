@@ -49,12 +49,12 @@ public class LocationVo : ValueObject
     /// <param name="x">x (горизонталь), 1..10</param>
     /// <param name="y">y (вертикаль), 1..10</param>
     /// <returns>Результат</returns>
-    public static Result<LocationVo, Error> Create(byte x, byte y)
+    public static Result<LocationVo, Error> Create(int x, int y)
     {
         if (MinValue > x || x > MaxValue) return GeneralErrors.ValueMustBeBetween(nameof(X), x,  MinValue, MaxValue);
         if (MinValue > y || y > MaxValue) return GeneralErrors.ValueMustBeBetween(nameof(Y), y,  MinValue, MaxValue);
 
-        return new LocationVo(x, y);
+        return new LocationVo((byte)x, (byte)y);
     }
     
     /// <summary>
