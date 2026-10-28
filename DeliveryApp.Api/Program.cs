@@ -7,14 +7,18 @@ using DeliveryApp.Core.Application.Commands.CompleteOrder;
 using DeliveryApp.Core.Application.Commands.CreateCourier;
 using DeliveryApp.Core.Application.Commands.CreateOrder;
 using DeliveryApp.Core.Application.Commands.MoveCourier;
+using DeliveryApp.Core.Application.EventHandlers.OrderAssigned;
+using DeliveryApp.Core.Application.EventHandlers.OrderCompleted;
 using DeliveryApp.Core.Application.Queries.GetAllCouriers;
 using DeliveryApp.Core.Application.Queries.GetAllCouriers.Response;
 using DeliveryApp.Core.Application.Queries.GetNotCompletedOrders;
 using DeliveryApp.Core.Application.Queries.GetNotCompletedOrders.Response;
+using DeliveryApp.Core.Domain.Models.Order.DomainEvents;
 using DeliveryApp.Core.Domain.Services.Complete;
 using DeliveryApp.Core.Domain.Services.Dispatch;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
+using DeliveryApp.Infrastructure.Adapters.Kafka;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Queries;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
@@ -94,6 +98,11 @@ builder.Services.AddTransient<IRequestHandler<CreateOrderCommand, Result<Guid, E
 // Queries
 builder.Services.AddTransient<IRequestHandler<GetAllCouriersQuery, GetAllCouriersResponse>, GetAllCouriersQueryHandler>();
 builder.Services.AddTransient<IRequestHandler<GetNotCompletedOrdersQuery, GetNotCompletedOrdersResponse>, GetNotCompletedOrdersQueryHandler>();
+
+// Order Events
+builder.Services.AddSingleton<IOrderEventsProducer, OrderEventsProducer>();
+builder.Services.AddTransient<INotificationHandler<OrderAssignedDomainEvent>, OrderAssignedDomainEventHandler>();
+builder.Services.AddTransient<INotificationHandler<OrderCompletedDomainEvent>, OrderCompletedDomainEventHandler>();
 
 builder.Services.AddQuartz(configure =>
 {

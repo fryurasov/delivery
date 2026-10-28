@@ -5,12 +5,16 @@ using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Queries;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using FluentAssertions;
+using MediatR;
+using NSubstitute;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.Postgres.Queries;
 
 public class OrderQueryServiceShould : PostgresTestBase
 {
+    private readonly IMediator _mediator = Substitute.For<IMediator>();
+
     [Fact]
     public async Task GetNotCompletedOrdersWhenNoOrdersExist()
     {
@@ -39,7 +43,7 @@ public class OrderQueryServiceShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var orderRepository = new OrderAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext, _mediator);
 
             await orderRepository.AddAsync(createdOrder);
             await orderRepository.AddAsync(completedOrder);

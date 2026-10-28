@@ -4,12 +4,16 @@ using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using DeliveryApp.IntegrationTests.Postgres;
 using FluentAssertions;
+using MediatR;
+using NSubstitute;
 using Xunit;
 
 namespace DeliveryApp.IntegrationTests.Postgres.Repositories;
 
 public class CourierPostgresShould : PostgresTestBase
 {
+    private readonly IMediator _mediator = Substitute.For<IMediator>();
+
     [Fact]
     public async Task CanAddAndGetById()
     {
@@ -20,7 +24,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext, _mediator);
             
             await courierRepository.AddAsync(courier);
             await unitOfWork.SaveChangesAsync();
@@ -48,7 +52,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext, _mediator);
             
             await courierRepository.AddAsync(courier);
             await unitOfWork.SaveChangesAsync();
@@ -60,7 +64,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var updateContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(updateContext);
-            var unitOfWork = new UnitOfWork(updateContext);
+            var unitOfWork = new UnitOfWork(updateContext, _mediator);
             
             courierToUpdate = (await courierRepository.GetByIdAsync(courier.Id, default)).Value;
             
@@ -97,7 +101,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext);
+            var unitOfWork = new UnitOfWork(writeContext, _mediator);
             
             await courierRepository.AddAsync(courier1);
             await courierRepository.AddAsync(courier2);
