@@ -2,6 +2,7 @@
 using Ddd;
 using DeliveryApp.Api;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
+using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
 using DeliveryApp.Core.Application.Commands.AssignOrder;
 using DeliveryApp.Core.Application.Commands.CompleteOrder;
 using DeliveryApp.Core.Application.Commands.CreateCourier;
@@ -108,6 +109,13 @@ builder.Services.AddQuartz(configure =>
 });
 
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+// Kafka Consumer
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
+builder.Services.AddHostedService<ConsumerService>();
 
 var app = builder.Build();
 
