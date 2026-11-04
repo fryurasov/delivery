@@ -12,7 +12,6 @@ namespace DeliveryApp.IntegrationTests.Postgres.Repositories;
 
 public class CourierPostgresShould : PostgresTestBase
 {
-    private readonly IMediator _mediator = Substitute.For<IMediator>();
 
     [Fact]
     public async Task CanAddAndGetById()
@@ -24,7 +23,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext, _mediator);
+            var unitOfWork = new UnitOfWork(writeContext);
             
             await courierRepository.AddAsync(courier);
             await unitOfWork.SaveChangesAsync();
@@ -52,7 +51,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext, _mediator);
+            var unitOfWork = new UnitOfWork(writeContext);
             
             await courierRepository.AddAsync(courier);
             await unitOfWork.SaveChangesAsync();
@@ -64,7 +63,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var updateContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(updateContext);
-            var unitOfWork = new UnitOfWork(updateContext, _mediator);
+            var unitOfWork = new UnitOfWork(updateContext);
             
             courierToUpdate = (await courierRepository.GetByIdAsync(courier.Id, default)).Value;
             
@@ -101,7 +100,7 @@ public class CourierPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var courierRepository = new CourierAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext, _mediator);
+            var unitOfWork = new UnitOfWork(writeContext);
             
             await courierRepository.AddAsync(courier1);
             await courierRepository.AddAsync(courier2);

@@ -13,7 +13,6 @@ namespace DeliveryApp.IntegrationTests.Postgres.Repositories;
 
 public class OrderPostgresShould : PostgresTestBase
 {
-    private readonly IMediator _mediator = Substitute.For<IMediator>();
 
     [Fact]
     public async Task CanAddAndGetById()
@@ -25,7 +24,7 @@ public class OrderPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var orderRepository = new OrderAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext, _mediator);
+            var unitOfWork = new UnitOfWork(writeContext);
             
             await orderRepository.AddAsync(order);
             await unitOfWork.SaveChangesAsync();
@@ -53,7 +52,7 @@ public class OrderPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var orderRepository = new OrderAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext, _mediator);
+            var unitOfWork = new UnitOfWork(writeContext);
             
             await orderRepository.AddAsync(order);
             await unitOfWork.SaveChangesAsync();
@@ -65,7 +64,7 @@ public class OrderPostgresShould : PostgresTestBase
         await using (var updateContext = CreateDbContext())
         {
             var orderRepository = new OrderAggregateRepository(updateContext);
-            var unitOfWork = new UnitOfWork(updateContext, _mediator);
+            var unitOfWork = new UnitOfWork(updateContext);
             
             orderToUpdate = (await orderRepository.GetByIdAsync(order.Id, default)).Value;
             
@@ -103,7 +102,7 @@ public class OrderPostgresShould : PostgresTestBase
         await using (var writeContext = CreateDbContext())
         {
             var orderRepository = new OrderAggregateRepository(writeContext);
-            var unitOfWork = new UnitOfWork(writeContext, _mediator);
+            var unitOfWork = new UnitOfWork(writeContext);
             
             await orderRepository.AddAsync(order1);
             await orderRepository.AddAsync(order2);

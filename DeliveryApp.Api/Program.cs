@@ -3,6 +3,7 @@ using Ddd;
 using DeliveryApp.Api;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
 using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
+using DeliveryApp.Infrastructure.Adapters.Postgres.BackgroundJobs;
 using DeliveryApp.Core.Application.Commands.AssignOrder;
 using DeliveryApp.Core.Application.Commands.CompleteOrder;
 using DeliveryApp.Core.Application.Commands.CreateCourier;
@@ -115,6 +116,15 @@ builder.Services.AddQuartz(configure =>
                 .WithSimpleSchedule(
                     schedule => schedule.WithIntervalInSeconds(1)
                         .RepeatForever()));
+
+    var processOutboxMessagesJobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+    configure
+        .AddJob<ProcessOutboxMessagesJob>(job => job.WithIdentity(processOutboxMessagesJobKey))
+        .AddTrigger(
+            trigger => trigger.ForJob(processOutboxMessagesJobKey)
+                .WithSimpleSchedule(
+                    schedule => schedule.WithIntervalInSeconds(3)
+                        .RepeatForever()));
 });
 
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
@@ -148,11 +158,11 @@ app.UseCors();
 app.MapControllers();
 
 // Apply Migrations
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//     db.Database.Migrate();
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
 
